@@ -11,6 +11,12 @@ import { ResponseHelper } from "@/common/utils/ResponseHelper";
 export class UserController {
 	constructor(private userService: UserService, private logger: Logger) {}
 
+	/**
+	 * Create a user
+	 * @param req - The request object
+	 * @param res - The response object
+	 * @returns void
+	 */
 	async createUser(req: Request, res: Response): Promise<void> {
 		const userData: CreateUserRequest = req.body;
 		const user = await this.userService.createUser(userData);
@@ -19,6 +25,12 @@ export class UserController {
 		ResponseHelper.created(res, user, "User created successfully");
 	}
 
+	/**
+	 * Get all users
+	 * @param req - The request object
+	 * @param res - The response object
+	 * @returns void
+	 */
 	async getAllUsers(req: Request, res: Response): Promise<void> {
 		const filters: UserFilters & { page?: number; page_size?: number } = {};
 
@@ -45,15 +57,27 @@ export class UserController {
 		);
 	}
 
+	/**
+	 * Get a user by ID
+	 * @param req - The request object
+	 * @param res - The response object
+	 * @returns void
+	 */
 	async getUserById(req: Request, res: Response): Promise<void> {
-		const id = req.params["id"] as string;
+		const id = parseInt(req.params["id"]);
 		const user = await this.userService.getUserById(id);
 
 		ResponseHelper.success(res, user, "User retrieved successfully");
 	}
 
+	/**
+	 * Update a user by ID
+	 * @param req - The request object
+	 * @param res - The response object
+	 * @returns void
+	 */
 	async updateUser(req: Request, res: Response): Promise<void> {
-		const id = req.params["id"] as string;
+		const id = parseInt(req.params["id"]);
 		const userData: UpdateUserRequest = req.body;
 		const user = await this.userService.updateUser(id, userData);
 
@@ -61,8 +85,14 @@ export class UserController {
 		ResponseHelper.success(res, user, "User updated successfully");
 	}
 
+	/**
+	 * Delete a user by ID
+	 * @param req - The request object
+	 * @param res - The response object
+	 * @returns void
+	 */
 	async deleteUser(req: Request, res: Response): Promise<void> {
-		const id = req.params["id"] as string;
+		const id = parseInt(req.params["id"] as string);
 		await this.userService.deleteUser(id);
 
 		this.logger.info("User deleted successfully", { userId: id });

@@ -53,6 +53,16 @@ export class ResponseHelper {
 		this.error(res, message, 409);
 	}
 
+	/**
+	 * Paginate a response
+	 * @param res - The response object
+	 * @param data - The data to paginate
+	 * @param total - The total number of items
+	 * @param page - The current page
+	 * @param page_size - The number of items per page
+	 * @param message - The message to display
+	 * @returns The paginated response
+	 */
 	static paginated<T>(
 		res: any,
 		data: T[],

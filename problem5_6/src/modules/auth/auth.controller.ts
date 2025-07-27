@@ -9,6 +9,12 @@ import { AuthenticationError } from "@/common/exceptions";
 export class AuthController {
 	constructor(private authService: AuthService, private logger: Logger) {}
 
+	/**
+	 * Register a user
+	 * @param req - The request object
+	 * @param res - The response object
+	 * @returns void
+	 */
 	async register(req: Request, res: Response): Promise<void> {
 		const userData: AuthUser = req.body;
 		const result = await this.authService.register(userData);
@@ -16,6 +22,12 @@ export class AuthController {
 		ResponseHelper.created(res, result, "User registered successfully");
 	}
 
+	/**
+	 * Login a user
+	 * @param req - The request object
+	 * @param res - The response object
+	 * @returns void
+	 */
 	async login(req: Request, res: Response): Promise<void> {
 		const loginData: AuthUser = req.body;
 		const result = await this.authService.login(loginData);
@@ -23,6 +35,12 @@ export class AuthController {
 		ResponseHelper.success(res, result, "Login successful");
 	}
 
+	/**
+	 * Logout a user
+	 * @param req - The request object
+	 * @param res - The response object
+	 * @returns void
+	 */
 	async logout(req: AuthenticatedRequest, res: Response): Promise<void> {
 		if (!req.user?.userId) {
 			throw new AuthenticationError("User not authenticated");
@@ -33,6 +51,12 @@ export class AuthController {
 		ResponseHelper.success(res, null, "Logout successful");
 	}
 
+	/**
+	 * Get the current user
+	 * @param req - The request object
+	 * @param res - The response object
+	 * @returns void
+	 */
 	async getCurrentUser(
 		req: AuthenticatedRequest,
 		res: Response

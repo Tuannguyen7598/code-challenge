@@ -1,18 +1,15 @@
 import {
-	Entity,
-	PrimaryColumn,
-	Column,
-	CreateDateColumn,
-	UpdateDateColumn,
-	OneToOne,
-	JoinColumn,
-	Index,
 	BeforeInsert,
 	BeforeUpdate,
+	Column,
+	Entity,
+	Index,
+	OneToMany,
+	OneToOne,
 } from "typeorm";
-import { AuthUser } from "./Auth";
-import { v4 as uuidv4 } from "uuid";
 import { BaseEntity } from "../Base.entity";
+import { AuthUser } from "./Auth";
+import { Score } from "./Score";
 
 @Entity("users")
 @Index(["email"], { unique: true })
@@ -52,6 +49,15 @@ export class User extends BaseEntity {
 		onDelete: "CASCADE",
 	})
 	authUser!: AuthUser;
+
+	@OneToMany(() => Score, (score) => score.user, {
+		cascade: false,
+		onDelete: "CASCADE",
+	})
+	scores!: Score[];
+
+	totalPoints!: number;
+	lastUpdated!: Date;
 
 	@BeforeInsert()
 	@BeforeUpdate()

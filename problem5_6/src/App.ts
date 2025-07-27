@@ -9,6 +9,7 @@ import { ErrorHandler } from "./common/middleware/ErrorHandler";
 import { ExceptionFilter } from "./common/middleware/ExceptionFilter";
 import { UserModule } from "./modules/user/user.module";
 import { AuthModule } from "./modules/auth/auth.module";
+import { ScoreModule } from "./modules/score/score.module";
 import { AppConfig } from "./Config";
 import { HealthService } from "./common/health/HealthService";
 
@@ -20,8 +21,6 @@ export class App {
 	private server: any;
 
 	constructor() {
-		// Load environment variables
-
 		this.app = express();
 		this.logger = new Logger();
 		this.database = new Database(this.logger);
@@ -33,10 +32,8 @@ export class App {
 	}
 
 	private initializeMiddleware(): void {
-		// Security middleware
 		this.app.use(helmet());
 
-		// CORS
 		this.app.use(
 			cors({
 				origin: AppConfig.cors.origin,
@@ -44,14 +41,12 @@ export class App {
 			})
 		);
 
-		// Compression
 		this.app.use(compression());
 
-		// Body parsing
 		this.app.use(express.json({ limit: "10mb" }));
+
 		this.app.use(express.urlencoded({ extended: true }));
 
-		// Request logging
 		this.app.use((req, res, next) => {
 			this.logger.info(`${req.method} ${req.path}`, {
 				ip: req.ip,
@@ -62,7 +57,6 @@ export class App {
 	}
 
 	private initializeModules(): void {
-		// Health check endpoints
 		this.app.get("/health/liveness", async (req, res) => {
 			try {
 				const health = await this.healthService.getSimpleHealth();
@@ -114,7 +108,6 @@ export class App {
 			}
 		});
 
-		// Legacy health check (for backward compatibility)
 		this.app.get("/health", async (req, res) => {
 			try {
 				const health = await this.healthService.getSimpleHealth();
@@ -140,23 +133,21 @@ export class App {
 			}
 		});
 
-		// Initialize modules
 		const userModule = new UserModule(this.database, this.logger);
 		const authModule = new AuthModule(this.database, this.logger);
+		const scoreModule = new ScoreModule(this.database, this.logger);
 
-		// Apply module routes
 		this.app.use(userModule.getRouter());
 		this.app.use(authModule.getRouter());
+		this.app.use(scoreModule.getRouter());
 	}
 
 	private initializeErrorHandling(): void {
 		const errorHandler = new ErrorHandler(this.logger);
 		const exceptionFilter = new ExceptionFilter(this.logger);
 
-		// 404 handler
 		this.app.use("*", errorHandler.handleNotFound.bind(errorHandler));
 
-		// Global exception filter (must be last)
 		this.app.use(
 			(error: Error, req: Request, res: Response, next: NextFunction) => {
 				exceptionFilter.handle(error, req, res, next);
@@ -166,7 +157,6 @@ export class App {
 
 	async start(): Promise<void> {
 		try {
-			// Connect to database
 			await this.database.connect();
 
 			const port = AppConfig.port;
@@ -178,7 +168,6 @@ export class App {
 				});
 			});
 
-			// Graceful shutdown
 			process.on("SIGTERM", () => this.gracefulShutdown());
 			process.on("SIGINT", () => this.gracefulShutdown());
 		} catch (error) {

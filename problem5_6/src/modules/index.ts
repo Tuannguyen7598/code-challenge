@@ -1,6 +1,7 @@
 // Export all modules
 export { UserModule } from "./user/user.module";
 export { AuthModule } from "./auth/auth.module";
+export { ScoreModule } from "./score/score.module";
 
 // Export entities
 export * from "@/common/database/entities";

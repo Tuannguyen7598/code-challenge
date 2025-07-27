@@ -19,6 +19,11 @@ export class UserService {
 		private logger: Logger
 	) {}
 
+	/**
+	 * Validate a user
+	 * @param userData - The data to validate the user with
+	 * @returns void
+	 */
 	async validateUser(userData: CreateUserRequest): Promise<void> {
 		const existingUser = await this.userRepository.findOne({
 			where: {
@@ -30,6 +35,11 @@ export class UserService {
 		}
 	}
 
+	/**
+	 * Create a user
+	 * @param userData - The data to create the user with
+	 * @returns The created user
+	 */
 	async createUser(userData: CreateUserRequest): Promise<User> {
 		this.logger.info("Creating new user", { email: userData.email });
 
@@ -48,6 +58,11 @@ export class UserService {
 		return user;
 	}
 
+	/**
+	 * Get all users
+	 * @param filters - The filters to apply to the users
+	 * @returns The users
+	 */
 	async getAllUsers(
 		filters?: UserFilters & { page?: number; page_size?: number }
 	): Promise<{
@@ -69,7 +84,12 @@ export class UserService {
 		return { users, total, page, page_size };
 	}
 
-	async getUserById(id: string): Promise<User> {
+	/**
+	 * Get a user by ID
+	 * @param id - The ID of the user to get
+	 * @returns The user
+	 */
+	async getUserById(id: number): Promise<User> {
 		this.logger.info("Fetching user by ID", { userId: id });
 		const user = await this.userRepository.findById(id);
 		if (!user) {
@@ -78,15 +98,19 @@ export class UserService {
 		return user;
 	}
 
-	async updateUser(id: string, userData: UpdateUserRequest): Promise<User> {
+	/**
+	 * Update a user by ID
+	 * @param id - The ID of the user to update
+	 * @param userData - The data to update the user with
+	 * @returns The updated user
+	 */
+	async updateUser(id: number, userData: UpdateUserRequest): Promise<User> {
 		this.logger.info("Updating user", { userId: id, updates: userData });
 
-		// Validate email format if provided
 		if (userData.email && !ValidationHelper.isValidEmail(userData.email)) {
 			throw new ValidationError("Invalid email format");
 		}
 
-		// Validate age if provided
 		if (
 			userData.age !== undefined &&
 			!ValidationHelper.isValidAge(userData.age)
@@ -103,7 +127,12 @@ export class UserService {
 		return user;
 	}
 
-	async deleteUser(id: string): Promise<void> {
+	/**
+	 * Delete a user by ID
+	 * @param id - The ID of the user to delete
+	 * @returns void
+	 */
+	async deleteUser(id: number): Promise<void> {
 		this.logger.info("Deleting user", { userId: id });
 		const deleted = await this.userRepository.delete(id);
 		if (!deleted) {

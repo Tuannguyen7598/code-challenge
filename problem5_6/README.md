@@ -661,43 +661,6 @@ npm run test:health
 - **Jane Smith**: `jane@example.com` / `password123`
 - **Bob Johnson**: `bob@example.com` / `password123`
 
-### Database Schema
-
-#### Users Table
-
-```sql
-CREATE TABLE users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  email TEXT UNIQUE NOT NULL,
-  age INTEGER NOT NULL,
-  status TEXT DEFAULT 'active',
-  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-  deletedAt DATETIME
-);
-```
-
-#### Auth Users Table
-
-```sql
-CREATE TABLE auth_users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  username TEXT NOT NULL UNIQUE,
-  email TEXT NOT NULL UNIQUE,
-  password TEXT NOT NULL,
-  role TEXT NOT NULL DEFAULT 'user',
-  isActive INTEGER NOT NULL DEFAULT 1,
-  userId INTEGER NOT NULL,
-  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-  deletedAt DATETIME,
-  lastLoginAt DATETIME,
-  refreshToken TEXT,
-  FOREIGN KEY (userId) REFERENCES users(id)
-);
-```
-
 ### Sử dụng Migrations
 
 1. **Tạo migration mới:**
@@ -730,34 +693,6 @@ CREATE TABLE auth_users (
 - **Exception Filter** với centralized error handling
 - **Custom error classes** với type safety
 - **Rate limiting** (có thể thêm nếu cần)
-
-## Module Architecture
-
-Dự án được tổ chức theo mô hình module giống NestJS:
-
-1. **Common**: Chứa các utilities và components dùng chung
-
-   - Database connection
-   - Logging utilities
-     - Response helpers
-     - Validation helpers
-     - **JWT Helper** - Xử lý JWT tokens
-     - **Auth Middleware** - Authentication & Authorization
-     - **Exception Filter** - Centralized error handling
-     - **Custom Exceptions** - Type-safe error classes
-     - **TypeORM Integration** - Entity-based ORM with decorators
-     - **Repository Pattern** - TypeORM Repository với Query Builder
-
-2. **Modules**: Mỗi module chứa đầy đủ các layer
-
-   - Entity: Định nghĩa data structure
-   - Repository: Data access layer
-   - Service: Business logic
-   - Controller: Request handling
-   - Routes: Route definitions với middleware
-   - Module: Tổ chức và export module
-
-3. **App**: Main application class quản lý tất cả modules
 
 ## Troubleshooting
 
@@ -799,31 +734,3 @@ npm install
 1. Kiểm tra custom error classes được import đúng
 2. Đảm bảo ExceptionFilter được đặt cuối middleware chain
 3. Kiểm tra error logging trong console/logs
-
-### Test API
-
-Để test tất cả các API:
-
-```bash
-# Chạy script test comprehensive
-./test_all_apis.sh
-
-# Hoặc test từng API riêng lẻ
-./test_api.sh
-```
-
-**Test Results:**
-
-- ✅ Health Check API
-- ✅ Register API
-- ✅ Login API
-- ✅ Get Current User API
-- ✅ Create User API
-- ✅ Get All Users API
-- ✅ Get Users with Filters API
-- ✅ Get User by ID API
-- ✅ Update User API
-- ✅ Delete User API (Admin only)
-- ✅ Authorization & Permission Control
-- ✅ Error Handling
-- ✅ JWT Token Validation

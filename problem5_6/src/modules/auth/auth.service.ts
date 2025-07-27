@@ -22,20 +22,22 @@ export class AuthService {
 		private logger: Logger
 	) {}
 
+	/**
+	 * Register a user
+	 * @param userData - The data to register the user with
+	 * @returns The user
+	 */
 	async register(userData: AuthUser): Promise<AuthResponse> {
 		this.logger.info("Registering new user", { email: userData.email });
 
-		// Validate email format
 		if (!ValidationHelper.isValidEmail(userData.email)) {
 			throw new ValidationError("Invalid email format");
 		}
 
-		// Validate password strength
 		if (userData.password.length < 6) {
 			throw new ValidationError("Password must be at least 6 characters long");
 		}
 
-		// Check if user already exists
 		const existingUser = await this.authRepository.findByEmail(userData.email);
 		if (existingUser) {
 			throw new ConflictError("User with this email already exists");
@@ -48,14 +50,12 @@ export class AuthService {
 			throw new ConflictError("Username already taken");
 		}
 
-		// Create user in users table first
 		const user = await this.userRepository.create({
 			name: userData.username,
 			email: userData.email,
-			age: 0, // Default age, can be updated later
+			age: 0,
 		});
 
-		// Create auth user
 		const authUserData: CreateAuthUserRequest = {
 			username: userData.username,
 			email: userData.email,
@@ -66,7 +66,6 @@ export class AuthService {
 
 		const authUser = await this.authRepository.create(authUserData);
 
-		// Generate JWT token
 		const token = JwtHelper.generateToken({
 			userId: authUser.id,
 			email: authUser.email,
@@ -90,10 +89,14 @@ export class AuthService {
 		};
 	}
 
+	/**
+	 * Login a user
+	 * @param loginData - The data to login the user with
+	 * @returns The user
+	 */
 	async login(loginData: LoginRequest): Promise<AuthResponse> {
 		this.logger.info("User login attempt", { email: loginData.email });
 
-		// Validate credentials
 		const authUser = await this.authRepository.validateCredentials(
 			loginData.email,
 			loginData.password
@@ -107,7 +110,6 @@ export class AuthService {
 			throw new AuthenticationError("Account is deactivated");
 		}
 
-		// Generate JWT token
 		const token = JwtHelper.generateToken({
 			userId: authUser.id,
 			email: authUser.email,
@@ -131,6 +133,11 @@ export class AuthService {
 		};
 	}
 
+	/**
+	 * Logout a user
+	 * @param userId - The ID of the user to logout
+	 * @returns void
+	 */
 	async logout(userId: number): Promise<void> {
 		this.logger.info("User logout", { userId });
 		// In a real application, you might want to:
@@ -140,6 +147,11 @@ export class AuthService {
 		// For now, we just log the logout
 	}
 
+	/**
+	 * Validate a token
+	 * @param token - The token to validate
+	 * @returns The user
+	 */
 	async validateToken(token: string): Promise<AuthUser | null> {
 		try {
 			const payload = JwtHelper.verifyToken(token);

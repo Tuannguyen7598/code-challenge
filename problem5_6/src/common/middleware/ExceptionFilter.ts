@@ -12,6 +12,13 @@ import {
 export class ExceptionFilter {
 	constructor(private logger: Logger) {}
 
+	/**
+	 * Handle an exception
+	 * @param error - The error to handle
+	 * @param req - The request object
+	 * @param res - The response object
+	 * @param next - The next function
+	 */
 	handle = (
 		error: Error,
 		req: Request,

@@ -5,6 +5,12 @@ import { Logger } from "../logger/Logger";
 export class ErrorHandler {
 	constructor(private logger: Logger) {}
 
+	/**
+	 * Handle validation errors
+	 * @param req - The request object
+	 * @param res - The response object
+	 * @param next - The next function
+	 */
 	handleValidationErrors(
 		req: Request,
 		res: Response,

@@ -30,10 +30,20 @@ export class AuthRepository implements IAuthRepository {
 		this.repository = database.getDataSource().getRepository(AuthUser);
 	}
 
+	/**
+	 * Find a user
+	 * @param options - The options to find the user with
+	 * @returns The user
+	 */
 	async findOne(options: FindOneOptions<AuthUser>): Promise<AuthUser | null> {
 		return await this.repository.findOne(options);
 	}
 
+	/**
+	 * Create a user
+	 * @param userData - The data to create the user with
+	 * @returns The created user
+	 */
 	async create(userData: CreateAuthUserRequest): Promise<AuthUser> {
 		const saltRounds = 10;
 		const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
@@ -51,10 +61,20 @@ export class AuthRepository implements IAuthRepository {
 		return savedAuthUser;
 	}
 
+	/**
+	 * Find a user by email
+	 * @param email - The email of the user to find
+	 * @returns The user
+	 */
 	async findByEmail(email: string): Promise<AuthUser | null> {
 		return await this.repository.findOne({ where: { email } });
 	}
 
+	/**
+	 * Find a user by username
+	 * @param username - The username of the user to find
+	 * @returns The user
+	 */
 	async findByUsername(username: string): Promise<AuthUser | null> {
 		return await this.repository.findOne({ where: { username } });
 	}
@@ -63,6 +83,12 @@ export class AuthRepository implements IAuthRepository {
 		return await this.repository.findOne({ where: { id } });
 	}
 
+	/**
+	 * Update a user
+	 * @param id - The ID of the user to update
+	 * @param userData - The data to update the user with
+	 * @returns The updated user
+	 */
 	async update(
 		id: number,
 		userData: UpdateAuthUserRequest
@@ -82,11 +108,22 @@ export class AuthRepository implements IAuthRepository {
 		return await this.repository.save(authUser);
 	}
 
+	/**
+	 * Delete a user
+	 * @param id - The ID of the user to delete
+	 * @returns void
+	 */
 	async delete(id: number): Promise<boolean> {
 		const result = await this.repository.delete(id);
 		return (result.affected ?? 0) > 0;
 	}
 
+	/**
+	 * Validate credentials
+	 * @param email - The email of the user
+	 * @param password - The password of the user
+	 * @returns The user
+	 */
 	async validateCredentials(
 		email: string,
 		password: string

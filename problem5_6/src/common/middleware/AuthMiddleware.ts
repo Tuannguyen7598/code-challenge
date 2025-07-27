@@ -9,6 +9,12 @@ export interface AuthenticatedRequest extends Request {
 export class AuthMiddleware {
 	constructor(private logger: Logger) {}
 
+	/**
+	 * Authenticate a request
+	 * @param req - The request object
+	 * @param res - The response object
+	 * @param next - The next function
+	 */
 	authenticate = (
 		req: AuthenticatedRequest,
 		res: Response,
@@ -47,6 +53,11 @@ export class AuthMiddleware {
 		}
 	};
 
+	/**
+	 * Authorize a request
+	 * @param roles - The roles to authorize
+	 * @returns The authorized request
+	 */
 	authorize = (roles: string[]) => {
 		return (
 			req: AuthenticatedRequest,
@@ -77,6 +88,12 @@ export class AuthMiddleware {
 		};
 	};
 
+	/**
+	 * Optional authentication
+	 * @param req - The request object
+	 * @param res - The response object
+	 * @param next - The next function
+	 */
 	optionalAuth = (
 		req: AuthenticatedRequest,
 		res: Response,
